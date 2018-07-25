@@ -2,36 +2,35 @@ import glob
 import operator
 import re
 import json
+import os
+import io
 from bs4 import BeautifulSoup
 
 # This opens the input file and creates a BS object for the headers. 
 
-def parse_headers():
-    for filename in sorted(glob.glob('**/*.html', recursive=True)):
-        try:
-            with open((filename), encoding='utf-8') as input_file:
-                global header_divs
-                soup = BeautifulSoup(input_file)
-                header_divs = soup.find_all('div', class_='noteHeading')
-                return header_divs
-                
-        except IOError:
-            print ('Unable to open file')
+def open_file(file):
+    with open((file), encoding='utf-8') as input_data:
+        global soup
+        soup = BeautifulSoup(input_data)
+        return soup
 
-# This opens the input file and creates a BS object for the bodies. 
+def parse_headers(soup):
+    global header_divs
+    header_divs = []
 
-def parse_bodies():
-    for filename in sorted(glob.glob('**/*.html', recursive=True)):
-        try:
-            with open((filename), encoding='utf-8') as input_file:
-                global body_divs
-                soup = BeautifulSoup(input_file)
-                body_divs = soup.find_all('div', class_='noteText')
-                return body_divs
-                
-        except IOError:
-            print ('Unable to open file')
+    for header_div in soup.find_all('div', class_='noteHeading'):
+        header_divs.append(header_div)
+    
+    return header_divs
 
+def parse_bodies(soup):
+    global body_divs
+    body_divs = []
+
+    for body_div in soup.find_all('div', class_='noteText'):
+        body_divs.append(body_div)
+    
+    return body_divs
 
 # This function builds a list of dictionaries containing the header information for each note. 
 
@@ -114,27 +113,29 @@ def merge_heads_with_bodies(header_dict_list, body_dict_list):
 
 # This function takes the contents of each dictionary in the list and writes them to a file. 
 
-def dict_writer(dict_list):
-	with open('output.txt', 'w') as f:
-		for dict in dict_list:
-			content = json.dumps(dict.get("content"))
-			loc_no = json.dumps(dict.get("location_number"))
-			page_no = json.dumps(dict.get("page_number"))
-			f.write("\n")
-			f.write(content + " " + "(" + page_no + ", " + loc_no + ")" +"\n")
-			f.write("\n")
+def dict_writer(dict_list, filename):
+    with open('%s.txt' % filename, 'w') as f:
+        for extract in dict_list:
+            content = extract.get("content")
+            loc_no = str(extract.get("location_number"))
+            page_no = str(extract.get("page_number"))
+            f.write("\n")
+            f.write(content + " " + "(" + page_no + ", " + loc_no + ")" +"\n")
+            f.write("\n")
 
-parse_headers()
+def run_script():
+    for each_file in sorted(glob.glob('**/*.html', recursive=True)):
+        name = os.path.splitext(each_file)[0]
+        open_file(each_file)
+        parse_headers(soup)
+        parse_bodies(soup)
+        extracted_heads = extract_headers(header_divs)
+        extracted_bodies = extract_body(body_divs)
+        heads_and_bodies = merge_heads_with_bodies(extracted_heads, extracted_bodies)
+        dict_writer(heads_and_bodies, name)
 
-parse_bodies()
 
-extracted_heads = extract_headers(header_divs)
-
-extracted_bodies = extract_body(body_divs)
-
-heads_and_bodies = merge_heads_with_bodies(extracted_heads, extracted_bodies)
-
-dict_writer(heads_and_bodies)
+run_script()
 
 
 
