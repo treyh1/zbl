@@ -4,15 +4,23 @@ import re
 import json
 import os
 import io
+import sys
 from bs4 import BeautifulSoup
 
 # This opens the input file and creates a BS object for the headers. 
 
-def open_file(file):
+def open_file(directory, file):
+
+    # change the directory from the script's cwd to the directory specified in the run_script function and passed to open_file.
+
+    os.chdir(directory)
+
     with open((file), encoding='utf-8') as input_data:
         global soup
         soup = BeautifulSoup(input_data)
         return soup
+
+# Get all of the divs in the kindle output file which belong to headers.
 
 def parse_headers(soup):
     global header_divs
@@ -22,6 +30,8 @@ def parse_headers(soup):
         header_divs.append(header_div)
     
     return header_divs
+
+# Get all of the divs in the kindle output file which belong to bodies. 
 
 def parse_bodies(soup):
     global body_divs
@@ -124,9 +134,14 @@ def dict_writer(dict_list, filename):
             f.write("\n")
 
 def run_script():
-    for each_file in sorted(glob.glob('**/*.html', recursive=True)):
-        name = os.path.splitext(each_file)[0]
-        open_file(each_file)
+
+    script = sys.argv[0]
+
+    directory = sys.argv[1]
+
+    for f in [f for f in os.listdir(directory) if f.endswith(".html")]:
+        name = os.path.splitext(f)[0]
+        open_file(directory, f)
         parse_headers(soup)
         parse_bodies(soup)
         extracted_heads = extract_headers(header_divs)
