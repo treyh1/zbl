@@ -5,7 +5,26 @@ import json
 import os
 import io
 import sys
+import argparse
 from bs4 import BeautifulSoup
+from evernote.api.client import EvernoteClient
+from evernote.edam.type import ttypes
+
+# This is all stuff that I will use further down in the script with the "run with evernote" option. 
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--evernote', action='store_true')
+
+parser.add_argument('--folder', dest="input_folder")
+
+args = parser.parse_args()
+
+# These are my credentials for accessing the evernote sandbox so I can stick notes in there. In production I'll need to take these out and replace with OAuth.
+
+my_token = "S=s1:U=94b3d:E=16b9b6772e4:C=16443b644c0:P=1cd:A=en-devtoken:V=2:H=749ed6e17600799426750a410c301b14"
+
+my_store_URL = "https://sandbox.evernote.com/shard/s1/notestore"
 
 # This opens the input file and creates a BS object for the headers. 
 
@@ -133,11 +152,49 @@ def dict_writer(dict_list, filename):
             f.write(content + " " + "(" + page_no + ", " + loc_no + ")" +"\n")
             f.write("\n")
 
+# This function is only used in the run_with_evernote script.
+
+def makeNote(authToken, noteStore, noteTitle, list_of_dicts):
+
+    client = EvernoteClient(token=authToken)
+
+    noteStore = client.get_note_store()
+
+    Errors = client.get_user_store()
+
+    nBody = '<?xml version="1.0" encoding="UTF-8"?>'
+    nBody += '<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">'
+    nBody += '<en-note>'
+    nBody += '<pre>'
+
+    for dict in list_of_dicts:
+        nBody += '<ul>'
+        ul = str(dict.get("content")) + " " + "(" + str(dict.get("page_number")) + ", " + str(dict.get("location_number")) + ")" +"\n"
+        nBody += ul
+        nBody += '</ul>'
+
+    nBody += '</pre>'
+    nBody += '</en-note>'
+
+    ## Create note
+
+    readingNote = ttypes.Note()
+    readingNote.title = noteTitle
+    readingNote.content = nBody
+
+    try:
+        note = noteStore.createNote(authToken, readingNote)
+        return note
+
+    except Errors.EDAMUserException as edue:
+        print ("EDAMUserException:", edue)
+        return None
+
 def run_script():
 
     script = sys.argv[0]
 
-    directory = sys.argv[1]
+    directory = args.input_folder
 
     for f in [f for f in os.listdir(directory) if f.endswith(".html")]:
         name = os.path.splitext(f)[0]
@@ -149,8 +206,29 @@ def run_script():
         heads_and_bodies = merge_heads_with_bodies(extracted_heads, extracted_bodies)
         dict_writer(heads_and_bodies, name)
 
+# The script only calls this function when the --evernote option is supplied.
 
-run_script()
+def run_with_evernote():
+
+    script = sys.argv[0]
+
+    directory = args.input_folder
+
+    for f in [f for f in os.listdir(directory) if f.endswith(".html")]:
+        name = os.path.splitext(f)[0]
+        open_file(directory, f)
+        parse_headers(soup)
+        parse_bodies(soup)
+        extracted_heads = extract_headers(header_divs)
+        extracted_bodies = extract_body(body_divs)
+        heads_and_bodies = merge_heads_with_bodies(extracted_heads, extracted_bodies)
+        makeNote(my_token, my_store_URL, name, heads_and_bodies)
+
+if (args.evernote):
+    run_with_evernote()
+
+if (args.evernote is False):
+    run_script()
 
 
 
