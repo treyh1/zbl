@@ -18,6 +18,8 @@ parser.add_argument('--evernote', action='store_true')
 
 parser.add_argument('--folder', dest="input_folder")
 
+parser.add_argument('--nbook', dest="target_notebook")
+
 args = parser.parse_args()
 
 # These are my credentials for accessing the evernote sandbox so I can stick notes in there. In production I'll need to take these out and replace with OAuth.
@@ -154,7 +156,7 @@ def dict_writer(dict_list, filename):
 
 # This function is only used in the run_with_evernote script.
 
-def makeNote(authToken, noteStore, noteTitle, list_of_dicts):
+def makeNote(authToken, noteStore, noteTitle, list_of_dicts, parentNotebook):
 
     client = EvernoteClient(token=authToken)
 
@@ -176,11 +178,25 @@ def makeNote(authToken, noteStore, noteTitle, list_of_dicts):
     nBody += '</pre>'
     nBody += '</en-note>'
 
-    ## Create note
+    ## Create note object
 
     readingNote = ttypes.Note()
     readingNote.title = noteTitle
     readingNote.content = nBody
+
+    # Added this code because I couldn't get the stuff on lines 196-97 working. 
+
+    readingNote.notebookGuid = parentNotebook
+
+
+    ## parentNotebook is optional; if omitted, default notebook is used
+
+    ## This bit of code below is not working, but was copied verbatim from the Evernote create note example.
+
+    ##if parentNotebook and hasattr(parentNotebook, 'guid'):
+        ##readingNote.notebookGuid = parentNotebook.guid
+
+    ## Attempt to create note in Evernote account
 
     try:
         note = noteStore.createNote(authToken, readingNote)
@@ -188,6 +204,11 @@ def makeNote(authToken, noteStore, noteTitle, list_of_dicts):
 
     except Errors.EDAMUserException as edue:
         print ("EDAMUserException:", edue)
+        return None
+
+    except Errors.EDAMNotFoundException as ednfe:
+        ## Parent Notebook GUID doesn't correspond to an actual notebook
+        print ("EDAMNotFoundException: Invalid parent notebook GUID", ednfe)
         return None
 
 def run_script():
@@ -214,6 +235,8 @@ def run_with_evernote():
 
     directory = args.input_folder
 
+    parent_notebook = args.target_notebook
+
     for f in [f for f in os.listdir(directory) if f.endswith(".html")]:
         name = os.path.splitext(f)[0]
         open_file(directory, f)
@@ -222,7 +245,7 @@ def run_with_evernote():
         extracted_heads = extract_headers(header_divs)
         extracted_bodies = extract_body(body_divs)
         heads_and_bodies = merge_heads_with_bodies(extracted_heads, extracted_bodies)
-        makeNote(my_token, my_store_URL, name, heads_and_bodies)
+        makeNote(my_token, my_store_URL, name, heads_and_bodies, parent_notebook)
 
 if (args.evernote):
     run_with_evernote()
