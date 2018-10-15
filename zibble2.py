@@ -186,8 +186,18 @@ def makeNote(authToken, noteStore, noteTitle, list_of_dicts, parentNotebook):
 
     # Added this code because I couldn't get the stuff on lines 196-97 working. 
 
-    readingNote.notebookGuid = parentNotebook
+    # readingNote.notebookGuid = parentNotebook
 
+    # A new attempt to allow the user to match notebooks based on a name provided above. If this works, I will delete 187-191. 
+
+    account_notebooks = noteStore.listNotebooks()
+
+    for notebook in account_notebooks:
+        try:
+            notebook.name == parentNotebook
+            readingNote.notebookGuid = notebook.guid
+        except:
+            print ("Notebook not found")
 
     ## parentNotebook is optional; if omitted, default notebook is used
 
