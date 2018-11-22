@@ -22,11 +22,13 @@ parser.add_argument('--nbook', dest="target_notebook")
 
 args = parser.parse_args()
 
-# These are my credentials for accessing the evernote sandbox so I can stick notes in there. In production I'll need to take these out and replace with OAuth.
+# production auth_token
 
-my_token = "S=s1:U=94b3d:E=16b9b6772e4:C=16443b644c0:P=1cd:A=en-devtoken:V=2:H=749ed6e17600799426750a410c301b14"
+my_token = "S=s59:U=631887:E=16e8977558b:C=16731c62728:P=81:A=treyhoward123:V=2:H=b0222222f593d83cd512b8febc68b69f"
 
-my_store_URL = "https://sandbox.evernote.com/shard/s1/notestore"
+# production notestore url
+
+my_store_URL = "https://www.evernote.com/shard/s59/notestore"
 
 # This opens the input file and creates a BS object for the headers. 
 
@@ -158,7 +160,7 @@ def dict_writer(dict_list, filename):
 
 def makeNote(authToken, noteStore, noteTitle, list_of_dicts, parentNotebook):
 
-    client = EvernoteClient(token=authToken)
+    client = EvernoteClient(token=authToken, sandbox=False)
 
     noteStore = client.get_note_store()
 
