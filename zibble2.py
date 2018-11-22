@@ -172,10 +172,10 @@ def makeNote(authToken, noteStore, noteTitle, list_of_dicts, parentNotebook):
     nBody += '<pre>'
 
     for dict in list_of_dicts:
-        nBody += '<ul>'
-        ul = str(dict.get("content")) + " " + "(" + str(dict.get("page_number")) + ", " + str(dict.get("location_number")) + ")" +"\n"
-        nBody += ul
-        nBody += '</ul>'
+        row = str(dict.get("content")) + " " + "(" + str(dict.get("page_number")) + ", " + str(dict.get("location_number")) + ")" +"\n"
+        nBody += '<p>'
+        nBody += row
+        nBody += '</p>'
 
     nBody += '</pre>'
     nBody += '</en-note>'
