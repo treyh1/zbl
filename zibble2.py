@@ -32,6 +32,14 @@ my_store_URL = "https://www.evernote.com/shard/s59/notestore"
 
 # This opens the input file and creates a BS object for the headers. 
 
+class EDAMUserException(RuntimeError):
+    def __init__(self, UserException):
+        Errors.EDAMUserException = UserException
+
+class EDAMNotFoundException(RuntimeError):
+    def __init__(self, EDAMNotFoundException):
+        Errors.EDAMNotFoundException = EDAMNotFoundException
+
 def open_file(directory, file):
 
     # change the directory from the script's cwd to the directory specified in the run_script function and passed to open_file.
@@ -119,7 +127,9 @@ def extract_body(divs):
 
             div_text = div.get_text()
 
-            body_dict['content'] = div_text
+            clean_div_text = div_text.replace("&", "and")
+
+            body_dict['content'] = clean_div_text
 
         extract_content(div)
         
@@ -214,11 +224,11 @@ def makeNote(authToken, noteStore, noteTitle, list_of_dicts, parentNotebook):
         note = noteStore.createNote(authToken, readingNote)
         return note
 
-    except Errors.EDAMUserException as edue:
+    except EDAMUserException as edue:
         print ("EDAMUserException:", edue)
         return None
 
-    except Errors.EDAMNotFoundException as ednfe:
+    except EDAMNotFoundException as ednfe:
         ## Parent Notebook GUID doesn't correspond to an actual notebook
         print ("EDAMNotFoundException: Invalid parent notebook GUID", ednfe)
         return None
