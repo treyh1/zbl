@@ -59,7 +59,7 @@ def parse_headers(soup):
     global header_divs
     header_divs = []
 
-    for header_div in soup.find_all('div', class_='noteHeading'):
+    for header_div in soup.find_all(class_='noteHeading'):
         header_divs.append(header_div)
     
     return header_divs
