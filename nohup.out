@@ -1,0 +1,33 @@
+/usr/local/lib/python3.7/site-packages/bs4/__init__.py:181: UserWarning: No parser was explicitly specified, so I'm using the best available HTML parser for this system ("html.parser"). This usually isn't a problem, but if you run this code on another system, or in a different virtual environment, it may use a different parser and behave differently.
+
+The code that caused this warning is on line 275 of the file zibble2.py. To get rid of this warning, change code that looks like this:
+
+ BeautifulSoup(YOUR_MARKUP})
+
+to this:
+
+ BeautifulSoup(YOUR_MARKUP, "html.parser")
+
+  markup_type=markup_type))
+/usr/local/lib/python3.7/site-packages/bs4/__init__.py:181: UserWarning: No parser was explicitly specified, so I'm using the best available HTML parser for this system ("html.parser"). This usually isn't a problem, but if you run this code on another system, or in a different virtual environment, it may use a different parser and behave differently.
+
+The code that caused this warning is on line 275 of the file zibble2.py. To get rid of this warning, change code that looks like this:
+
+ BeautifulSoup(YOUR_MARKUP})
+
+to this:
+
+ BeautifulSoup(YOUR_MARKUP, "html.parser")
+
+  markup_type=markup_type))
+/usr/local/lib/python3.7/site-packages/bs4/__init__.py:181: UserWarning: No parser was explicitly specified, so I'm using the best available HTML parser for this system ("html.parser"). This usually isn't a problem, but if you run this code on another system, or in a different virtual environment, it may use a different parser and behave differently.
+
+The code that caused this warning is on line 275 of the file zibble2.py. To get rid of this warning, change code that looks like this:
+
+ BeautifulSoup(YOUR_MARKUP})
+
+to this:
+
+ BeautifulSoup(YOUR_MARKUP, "html.parser")
+
+  markup_type=markup_type))
