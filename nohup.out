@@ -31,3 +31,39 @@ to this:
  BeautifulSoup(YOUR_MARKUP, "html.parser")
 
   markup_type=markup_type))
+/usr/local/lib/python3.7/site-packages/bs4/__init__.py:181: UserWarning: No parser was explicitly specified, so I'm using the best available HTML parser for this system ("html.parser"). This usually isn't a problem, but if you run this code on another system, or in a different virtual environment, it may use a different parser and behave differently.
+
+The code that caused this warning is on line 275 of the file zibble2.py. To get rid of this warning, change code that looks like this:
+
+ BeautifulSoup(YOUR_MARKUP})
+
+to this:
+
+ BeautifulSoup(YOUR_MARKUP, "html.parser")
+
+  markup_type=markup_type))
+Exception in thread Thread-1:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/threading.py", line 801, in __bootstrap_inner
+    self.run()
+  File "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/watchdog/observers/api.py", line 199, in run
+    self.dispatch_events(self.event_queue, self.timeout)
+  File "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/watchdog/observers/api.py", line 368, in dispatch_events
+    handler.dispatch(event)
+  File "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/watchdog/events.py", line 322, in dispatch
+    self.on_any_event(event)
+  File "kndl_watcher2.py", line 67, in on_any_event
+    os.rename(event.src_path, "input/archive/%s" % event.src_path)
+OSError: [Errno 2] No such file or directory
+
+/usr/local/lib/python3.7/site-packages/bs4/__init__.py:181: UserWarning: No parser was explicitly specified, so I'm using the best available HTML parser for this system ("html.parser"). This usually isn't a problem, but if you run this code on another system, or in a different virtual environment, it may use a different parser and behave differently.
+
+The code that caused this warning is on line 275 of the file zibble2.py. To get rid of this warning, change code that looks like this:
+
+ BeautifulSoup(YOUR_MARKUP})
+
+to this:
+
+ BeautifulSoup(YOUR_MARKUP, "html.parser")
+
+  markup_type=markup_type))

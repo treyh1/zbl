@@ -16,7 +16,10 @@ class Watcher:
  
     def run(self):
         event_handler = Handler()
-        self.observer.schedule(event_handler, self.dir, recursive=True)
+
+# Do not use the recursive option here. If you do, the watcher might start detecting events in the input/archive folder.
+
+        self.observer.schedule(event_handler, self.dir)
         self.observer.start()
         try:
             while True:
@@ -50,6 +53,18 @@ class Handler(FileSystemEventHandler):
 # Run it as an external process. 
 
             call([command], shell=True)
+
+# run path split to break this directory apart. 
+
+            input_parts = os.path.split(event.src_path)
+
+# The second part is the filename.
+
+            file_name = input_parts[1]
+
+# Move the file from the event source path to the input/archive directory.      
+
+            os.rename(event.src_path, "input/archive/%s" % file_name)
 
 if __name__ == '__main__':
     w = Watcher()
