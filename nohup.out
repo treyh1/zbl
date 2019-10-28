@@ -67,3 +67,15 @@ to this:
  BeautifulSoup(YOUR_MARKUP, "html.parser")
 
   markup_type=markup_type))
+Traceback (most recent call last):
+  File "kndl_watcher2.py", line 2, in <module>
+    from watchdog.observers import Observer
+ModuleNotFoundError: No module named 'watchdog'
+Traceback (most recent call last):
+  File "kndl_watcher2.py", line 2, in <module>
+    from watchdog.observers import Observer
+ImportError: No module named watchdog.observers
+Traceback (most recent call last):
+  File "kndl_watcher2.py", line 2, in <module>
+    from watchdog.observers import Observer
+ImportError: No module named watchdog.observers
