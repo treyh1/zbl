@@ -48,7 +48,7 @@ class Handler(FileSystemEventHandler):
 
 # Then run the ZBL command. The watched folder is the directory where new HTML files will arrive. Define the commadn first. 
 
-            command = "python3 zibble2.py --evernote --folder input/"
+            command = "python2.7 zibble2.py --evernote --folder input/"
 
 # Run it as an external process. 
 
