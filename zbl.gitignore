@@ -7,7 +7,12 @@
 
 /input
 /test_input
+/troubleshoot
 
 # Pandas is a scratchspace for IDLE sessions and charts I've exported in the course of messing around with Jupyter notebooks. Don't sync that either. 
 
 /pandas
+
+# *.out files are exhaust from running no-hang-up. No need to sync those.
+
+*.out
