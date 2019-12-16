@@ -1,17 +1,17 @@
 *.pyc
-/venv
-.DS_Store
-/__pycache__
+venv/
+*.DS_Store
+__pycache__/
 
 # The /input archive is the directory that the software watches via no hang up. I don't need to sync the contents of that folder. 
 
-/input
-/test_input
-/troubleshoot
+input/
+test_input/
+troubleshoot/
 
 # Pandas is a scratchspace for IDLE sessions and charts I've exported in the course of messing around with Jupyter notebooks. Don't sync that either. 
 
-/pandas
+pandas/
 
 # *.out files are exhaust from running no-hang-up. No need to sync those.
 
