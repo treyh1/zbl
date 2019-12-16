@@ -6,6 +6,7 @@ __pycache__/
 # The /input archive is the directory that the software watches via no hang up. I don't need to sync the contents of that folder. 
 
 input/
+input/archive/
 test_input/
 troubleshoot/
 
