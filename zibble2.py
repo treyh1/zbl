@@ -6,9 +6,14 @@ import os
 import io
 import sys
 import argparse
+import math
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plot
 from bs4 import BeautifulSoup
 from evernote.api.client import EvernoteClient
 from evernote.edam.type import ttypes
+from operator import itemgetter
 
 # This is all stuff that I will use further down in the script with the "run with evernote" option. 
 
@@ -269,16 +274,81 @@ def run_with_evernote():
         extracted_heads = extract_headers(header_divs)
         extracted_bodies = extract_body(body_divs)
         heads_and_bodies = merge_heads_with_bodies(extracted_heads, extracted_bodies)
+        make_ventile_view(heads_and_bodies)
         makeNote(my_token, my_store_URL, name, heads_and_bodies)
+
+# This function generates the ventile_view bar graph using the product of merge_heads_with_bodies above. 
+
+def make_ventile_view(dict_list):
+    
+    # The dict_list is the output of the merge_heads_with_bodies function, and needs to be called after this. 
+
+    sorted_dicts = sorted(dict_list, key=itemgetter('location_number'), reverse=True)
+    
+    # grab the last dictionary from the sorted dictionary list. 
+
+    last_dict = sorted_dicts[0]
+
+    total_length = last_dict['location_number']
+
+    # Divide the book length by 20. 
+
+    ventile_length = total_length / 20
+
+    # Round this number down.
+
+    def round_down(n):
+        return math.floor(n)
+
+    rounded_ventile_length = round_down(ventile_length)
+
+    # Create a dictionary for the end position of each ventile. 
+    # This will be merged with the start positions later to create a dataframe of start and end positions for each ventile.
+
+    end_positions = {}
+
+    # the values for 1 through 19 are assigned dynamically based on the last_location of the preceding key-value in the dictionary. 
+
+    for x in range (1,20):
+        end_positions[x] = x * rounded_ventile_length
+        
+    # Manually enter the end_position of the last ventile as the total length of the book. 
+        
+    end_positions[20] = total_length
+
+    # Create a dictionary for the start positions
+
+    start_positions = {}
+
+    # Starting position of the first ventile will always be 1. 
+
+    start_positions[1] = 1
+
+    # For ventiles 2-20, the start position will be the end position of the preceding ventile + 1. 
+
+    for x in range (2,21):
+        start_positions[x] = (end_positions[x-1] + 1)
+        
+    # Merge the start_positions and end_positions together to make the "ventile_frame"
+    # This will contain the starting and ending positions for each ventile, and the count of notes for each one across the whole book. 
+
+    ventile_frame = pd.DataFrame({'start':pd.Series(start_positions),'end':pd.Series(end_positions)})
+
+    # make a 0-value note_count column in the ventile_frame
+    
+    ventile_frame["note_count"] = 0
+    
+    for single_dict in dict_list:
+        location_number = single_dict['location_number']
+        ventile_frame["note_count"][(ventile_frame["start"] <= location_number) & (ventile_frame["end"] >= location_number)] += 1
+
+    # Create the actual ventile view as a png. 
+
+    ventile_frame.plot(kind='bar', y="note_count", legend=None)
+    plot.savefig('ventile_view.png')
 
 if (args.evernote):
     run_with_evernote()
 
 if (args.evernote is False):
     run_script()
-
-
-
-
-
-
