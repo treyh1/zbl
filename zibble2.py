@@ -274,12 +274,13 @@ def run_with_evernote():
         extracted_heads = extract_headers(header_divs)
         extracted_bodies = extract_body(body_divs)
         heads_and_bodies = merge_heads_with_bodies(extracted_heads, extracted_bodies)
-        make_ventile_view(heads_and_bodies)
+        # make_ventile_view(heads_and_bodies, name)
         makeNote(my_token, my_store_URL, name, heads_and_bodies)
 
-# This function generates the ventile_view bar graph using the product of merge_heads_with_bodies above. 
+# This function generates the ventile_view bar graph using the product of merge_heads_with_bodies above. The input is the dict_list and the name of the note, 
+# which comes from the file name. 
 
-def make_ventile_view(dict_list):
+def make_ventile_view(dict_list, name):
     
     # The dict_list is the output of the merge_heads_with_bodies function, and needs to be called after this. 
 
@@ -345,7 +346,7 @@ def make_ventile_view(dict_list):
     # Create the actual ventile view as a png. 
 
     ventile_frame.plot(kind='bar', y="note_count", legend=None)
-    plot.savefig('ventile_view.png')
+    plot.savefig('%s.png') % name
 
 if (args.evernote):
     run_with_evernote()

@@ -1,5 +1,8 @@
 import hashlib
 import binascii
+import sys
+import argparse
+import os
 from evernote.api.client import EvernoteClient
 from evernote.edam.type import ttypes
 
@@ -11,7 +14,13 @@ my_token = "S=s59:U=631887:E=17633b2baf8:C=16edc018b18:P=81:A=treyhoward123:V=2:
 
 my_store_URL = "https://www.evernote.com/shard/s59/notestore"
 
-def makeNote(authToken, noteStore):
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--folder', dest="input_folder")
+
+args = parser.parse_args()
+
+def makeNote(authToken, noteStore, noteTitle):
 
     client = EvernoteClient(token=authToken, sandbox=False)
 
@@ -23,11 +32,9 @@ def makeNote(authToken, noteStore):
 
     Reading_guid = "ea612952-d3a5-4a39-862b-01190ba02e47"
 
-    # Right now the image reference is hard-coded. I won't be able to do that in production (it will have to match the note title)
-
     # open the image and take its md5_hash
 
-    image = open('kill_devil_hills.jpg', 'rb').read()
+    image = open('%s.png' % noteTitle, 'rb').read()
     md5 = hashlib.md5()
     md5.update(image)
     image_hash = md5.hexdigest()
@@ -42,7 +49,7 @@ def makeNote(authToken, noteStore):
     # Create a new resource to hold the image.
 
     resource = ttypes.Resource()
-    resource.mime = 'image/jpg'
+    resource.mime = 'image/png'
     resource.data = data
 
     # Create a resource list in which to put the resource created above.
@@ -51,7 +58,7 @@ def makeNote(authToken, noteStore):
     resource_list.append(resource)
 
     readingNote = ttypes.Note()
-    readingNote.title = 'Kill Devil Hills'
+    readingNote.title = noteTitle
     readingNote.notebookGuid = Reading_guid
     readingNote.resources = resource_list
 
@@ -60,8 +67,8 @@ def makeNote(authToken, noteStore):
     nBody += '<en-note>'
     nBody += '<pre>'
     nBody += '<p>'
-    nBody += 'A picture of the beach in Kill Devil Hills in winter.'
-    nBody += '<en-media type="image/jpg" hash="%s"/>' % image_hash
+    nBody += 'A pretty picture.'
+    nBody += '<en-media type="image/png" hash="%s"/>' % image_hash
     nBody += '</p>'
     nBody += '</pre>'
     nBody += '</en-note>'
@@ -83,4 +90,18 @@ def makeNote(authToken, noteStore):
         print ("EDAMNotFoundException: Invalid parent notebook GUID", ednfe)
         return None
 
-makeNote(my_token, my_store_URL)
+def run_script():
+
+    script = sys.argv[0]
+
+    directory = args.input_folder
+
+    # Commenting this out because of the "Cooking Bug". Parent Notebook will now be hard-coded to equal the GUID of the Reading Notebook.
+
+    # parent_notebook = args.target_notebook
+
+    for f in [f for f in os.listdir(directory) if f.endswith(".png")]:
+        name = os.path.splitext(f)[0]
+        makeNote(my_token, my_store_URL, name)
+
+run_script()
