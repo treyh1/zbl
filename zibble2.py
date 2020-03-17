@@ -187,6 +187,40 @@ def makeNote(authToken, noteStore, noteTitle, list_of_dicts):
 
     Reading_guid = "ea612952-d3a5-4a39-862b-01190ba02e47"
 
+    # open the image and take its md5_hash
+
+    image = open('%s.png' % noteTitle, 'rb').read()
+    md5 = hashlib.md5()
+    md5.update(image)
+    image_hash = md5.hexdigest()
+
+    # Assign the image content, length, and hash to a Data object.
+
+    data = ttypes.Data()
+    data.size = len(image)
+    data.bodyHash = image_hash
+    data.body = image
+
+    # Create a new resource to hold the image.
+
+    resource = ttypes.Resource()
+    resource.mime = 'image/png'
+    resource.data = data
+
+    # Create a resource list in which to put the resource created above.
+
+    resource_list = []
+    resource_list.append(resource)
+
+    # Create note object
+
+    readingNote = ttypes.Note()
+    readingNote.title = noteTitle
+    readingNote.notebookGuid = Reading_guid
+    readingNote.resources = resource_list
+
+    # Start filling in the note content, including a reference to the image that we added to the resources list above.
+
     nBody = '<?xml version="1.0" encoding="UTF-8"?>'
     nBody += '<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">'
     nBody += '<en-note>'
@@ -196,32 +230,16 @@ def makeNote(authToken, noteStore, noteTitle, list_of_dicts):
         row = str(dict.get("content")) + " " + "(" + str(dict.get("page_number")) + ", " + str(dict.get("location_number")) + ")" +"\n"
         nBody += '<p>'
         nBody += row
-        nBody += '</p>'
+        nBody += '</p'
+
+    nBody += '<en-media type="image/png" hash="%s"/>' % image_hash
 
     nBody += '</pre>'
     nBody += '</en-note>'
 
-    ## Create note object
+    # Create the note object.
 
-    readingNote = ttypes.Note()
-    readingNote.title = noteTitle
     readingNote.content = nBody
-    readingNote.notebookGuid = Reading_guid
-
-    # Added this code because I couldn't get the stuff on lines 196-97 working. 
-
-    # readingNote.notebookGuid = parentNotebook
-
-    # Commenting the code below out because I have been having a hard time getting the --nbook option to work (see "Cooking Bug")
-
-    # account_notebooks = noteStore.listNotebooks()
-
-    # for notebook in account_notebooks:
-    #     try:
-    #         notebook.name == parentNotebook
-    #         readingNote.notebookGuid = notebook.guid
-    #     except:
-    #         print ("Notebook not found")
 
     ## Attempt to create note in Evernote account
 
@@ -262,8 +280,6 @@ def run_with_evernote():
 
     directory = args.input_folder
 
-    # Commenting this out because of the "Cooking Bug". Parent Notebook will now be hard-coded to equal the GUID of the Reading Notebook.
-
     # parent_notebook = args.target_notebook
 
     for f in [f for f in os.listdir(directory) if f.endswith(".html")]:
@@ -274,7 +290,7 @@ def run_with_evernote():
         extracted_heads = extract_headers(header_divs)
         extracted_bodies = extract_body(body_divs)
         heads_and_bodies = merge_heads_with_bodies(extracted_heads, extracted_bodies)
-        # make_ventile_view(heads_and_bodies, name)
+        make_ventile_view(heads_and_bodies, name)
         makeNote(my_token, my_store_URL, name, heads_and_bodies)
 
 # This function generates the ventile_view bar graph using the product of merge_heads_with_bodies above. The input is the dict_list and the name of the note, 
