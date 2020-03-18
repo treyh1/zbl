@@ -1,3 +1,5 @@
+import hashlib
+import binascii
 import glob
 import operator
 import re
@@ -230,7 +232,7 @@ def makeNote(authToken, noteStore, noteTitle, list_of_dicts):
         row = str(dict.get("content")) + " " + "(" + str(dict.get("page_number")) + ", " + str(dict.get("location_number")) + ")" +"\n"
         nBody += '<p>'
         nBody += row
-        nBody += '</p'
+        nBody += '</p>'
 
     nBody += '<en-media type="image/png" hash="%s"/>' % image_hash
 
@@ -362,7 +364,7 @@ def make_ventile_view(dict_list, name):
     # Create the actual ventile view as a png. 
 
     ventile_frame.plot(kind='bar', y="note_count", legend=None)
-    plot.savefig('%s.png') % name
+    plot.savefig('%s.png' % name) 
 
 if (args.evernote):
     run_with_evernote()
