@@ -228,11 +228,20 @@ def makeNote(authToken, noteStore, noteTitle, list_of_dicts):
     nBody += '<en-note>'
     nBody += '<pre>'
 
-    for dict in list_of_dicts:
-        row = str(dict.get("content")) + " " + "(" + str(dict.get("page_number")) + ", " + str(dict.get("location_number")) + ")" +"\n"
-        nBody += '<p>'
-        nBody += row
-        nBody += '</p>'
+    for kindle_dict in list_of_dicts:
+
+        #Check to see if the dictionary is a note. If it is, make it blue.
+
+        if kindle_dict['type'] = 'note':
+            row = str(kindle_dict.get("content")) + " " + "(" + str(kindle_dict.get("page_number")) + ", " + str(kindle_dict.get("location_number")) + ")" +"\n"
+            nBody += '<p>'
+            nBody += '<span style="--darkmode-color: rgb(206, 215, 255); --lightmode-color: rgb(4, 51, 255);" class="VXs25">'row'</span>'
+            nBody += '</p>'
+        else:
+            row = str(kindle_dict.get("content")) + " " + "(" + str(kindle_dict.get("page_number")) + ", " + str(kindle_dict.get("location_number")) + ")" +"\n"
+            nBody += '<p>'
+            nBody += row
+            nBody += '</p>'
 
     nBody += '<en-media type="image/png" hash="%s"/>' % image_hash
 
