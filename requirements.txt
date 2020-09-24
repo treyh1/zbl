@@ -2,7 +2,7 @@ argh==0.26.2
 beautifulsoup4==4.6.0
 certifi==2019.11.28
 chardet==3.0.4
-evernote3==1.25.13
+evernote3==1.25.14
 httplib2==0.14.0
 idna==2.8
 oauth2==1.9.0.post1
