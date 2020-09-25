@@ -243,7 +243,7 @@ def makeNote(authToken, noteStore, noteTitle, list_of_dicts):
     nBody = '<?xml version="1.0" encoding="UTF-8"?>'
     nBody += '<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">'
     nBody += "<en-note>"
-    nBody += "<pre>"
+    nBody += "<div>"
 
     for kindle_dict in list_of_dicts:
 
@@ -284,7 +284,7 @@ def makeNote(authToken, noteStore, noteTitle, list_of_dicts):
 
     nBody += '<en-media type="image/png" hash="%s"/>' % image_hash
 
-    nBody += "</pre>"
+    nBody += "</div>"
     nBody += "</en-note>"
 
     # Create the note object.
