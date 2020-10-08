@@ -424,9 +424,12 @@ def make_ventile_view(dict_list, name):
     ventile_frame.plot(kind="bar", y="note_count", legend=None)
     plot.savefig("%s.png" % name)
 
+def main():
 
-if args.evernote:
-    run_with_evernote()
+    if args.evernote:
+        run_with_evernote()
 
-if args.evernote is False:
-    run_script()
+    if args.evernote is False:
+        run_script()
+
+main()
