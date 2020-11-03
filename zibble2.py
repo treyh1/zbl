@@ -432,4 +432,5 @@ def main():
     if args.evernote is False:
         run_script()
 
-main()
+if __name__ == '__main__':
+    main()
