@@ -16,6 +16,7 @@ from bs4 import BeautifulSoup
 from evernote.api.client import EvernoteClient
 from evernote.edam.type import ttypes
 from operator import itemgetter
+from os.path import abspath
 
 # This is all stuff that I will use further down in the script with the "run with evernote" option.
 
@@ -309,7 +310,7 @@ def makeNote(authToken, noteStore, noteTitle, list_of_dicts):
 
 def run_script():
 
-    script = sys.argv[0]
+    script = abspath(sys.argv[0])
 
     directory = args.input_folder
 
