@@ -34,7 +34,7 @@ args = parser.parse_args()
 
 # production auth_token
 
-my_token = "S=s59:U=631887:E=17633b2baf8:C=16edc018b18:P=81:A=treyhoward123:V=2:H=822a572c24f95a9ef3d750c351ea1e77"
+my_token = "S=s59:U=631887:E=17e8236491a:C=1772a8519f0:P=81:A=treyhoward123:V=2:H=cc1c62367e710c5850b56635b74d56d7"
 
 # production notestore url
 
