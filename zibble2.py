@@ -64,6 +64,32 @@ def open_file(directory, file):
         return soup
 
 
+# Extract authors from the Kindle results.
+
+def parse_authors(soup):
+    global authors
+    authors = []
+
+    for div in soup.find_all(class_="authors"):
+
+# get the contents of that div.
+
+        authors_name = div.get_text()
+
+# convert it to the string to take out the \n
+
+        authors_name_string = str(authors_name)
+
+# take out the \n
+
+        clean_authors_name = authors_name_string.replace('\n', '')
+
+# append it to the list created
+
+        authors.append(clean_authors_name)
+
+    return authors
+
 # Get all of the divs in the kindle output file which belong to headers.
 
 
@@ -180,8 +206,12 @@ def merge_heads_with_bodies(header_dict_list, body_dict_list):
 # This function takes the contents of each dictionary in the list and writes them to a file.
 
 
-def dict_writer(dict_list, filename):
+def dict_writer(author_list, dict_list, filename):
     with open("%s.txt" % filename, "w") as f:
+        for list_item in author_list:
+            f.write("author(s) = " + list_item)
+            f.write("\n")
+
         for extract in dict_list:
             content = extract.get("content")
             loc_no = str(extract.get("location_number"))
@@ -316,12 +346,13 @@ def run_script():
     for f in [f for f in os.listdir(directory) if f.endswith(".html")]:
         name = os.path.splitext(f)[0]
         open_file(directory, f)
+        extracted_authors = parse_authors(soup)
         parse_headers(soup)
         parse_bodies(soup)
         extracted_heads = extract_headers(header_divs)
         extracted_bodies = extract_body(body_divs)
         heads_and_bodies = merge_heads_with_bodies(extracted_heads, extracted_bodies)
-        dict_writer(heads_and_bodies, name)
+        dict_writer(extracted_authors, heads_and_bodies, name)
 
 
 # The script only calls this function when the --evernote option is supplied.
