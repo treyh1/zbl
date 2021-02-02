@@ -33,7 +33,7 @@ args = parser.parse_args()
 
 # production auth_token
 
-my_token = "S=s59:U=631887:E=17633b2baf8:C=16edc018b18:P=81:A=treyhoward123:V=2:H=822a572c24f95a9ef3d750c351ea1e77"
+my_token = "S=s59:U=631887:E=17e8236491a:C=1772a8519f0:P=81:A=treyhoward123:V=2:H=cc1c62367e710c5850b56635b74d56d7"
 
 # production notestore url
 
@@ -224,7 +224,7 @@ def dict_writer(author_list, dict_list, filename):
 # This function is only used in the run_with_evernote script.
 
 
-def makeNote(authToken, noteStore, noteTitle, list_of_dicts):
+def makeNote(authToken, noteStore, noteTitle, author_list, list_of_dicts):
 
     client = EvernoteClient(token=authToken, sandbox=False)
 
@@ -274,6 +274,15 @@ def makeNote(authToken, noteStore, noteTitle, list_of_dicts):
     nBody += '<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">'
     nBody += "<en-note>"
     nBody += "<div>"
+
+    for list_item in author_list:
+        row = (
+            "author(s) = "
+                + str(list_item)
+                )
+        nBody += "<br>"
+        nBody += row
+        nBody += "</br>"
 
     for kindle_dict in list_of_dicts:
 
@@ -369,13 +378,14 @@ def run_with_evernote():
     for f in [f for f in os.listdir(directory) if f.endswith(".html")]:
         name = os.path.splitext(f)[0]
         open_file(directory, f)
+        extracted_authors = parse_authors(soup)
         parse_headers(soup)
         parse_bodies(soup)
         extracted_heads = extract_headers(header_divs)
         extracted_bodies = extract_body(body_divs)
         heads_and_bodies = merge_heads_with_bodies(extracted_heads, extracted_bodies)
         make_ventile_view(heads_and_bodies, name)
-        makeNote(my_token, my_store_URL, name, heads_and_bodies)
+        makeNote(my_token, my_store_URL, name, extracted_authors, heads_and_bodies)
 
 
 # This function generates the ventile_view bar graph using the product of merge_heads_with_bodies above. The input is the dict_list and the name of the note,
