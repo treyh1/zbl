@@ -25,19 +25,9 @@ parser.add_argument("--evernote", action="store_true")
 
 parser.add_argument("--folder", dest="input_folder")
 
-# Commenting this out because of the "Cooking Bug". Parent Notebook will now be hard-coded to equal the GUID of the Reading Notebook.
-
-# parser.add_argument('--nbook', dest="target_notebook")
+parser.add_argument("--permissions", dest="permissions_file")
 
 args = parser.parse_args()
-
-# production auth_token
-
-my_token = "S=s59:U=631887:E=17e8236491a:C=1772a8519f0:P=81:A=treyhoward123:V=2:H=cc1c62367e710c5850b56635b74d56d7"
-
-# production notestore url
-
-my_store_URL = "https://www.evernote.com/shard/s59/notestore"
 
 # This opens the input file and creates a BS object for the headers.
 
@@ -51,6 +41,19 @@ class EDAMNotFoundException(RuntimeError):
     def __init__(self, EDAMNotFoundException):
         Errors.EDAMNotFoundException = EDAMNotFoundException
 
+# Read the contents of the permissions file which is passed in as an argument.
+
+def read_credentials(file):
+    global my_token
+    global my_store_URL
+    global notebook_guid
+
+    with open((file), "r") as read_file:
+        data = json.load(read_file)
+        my_token = data["my_token"]
+        my_store_URL = data["my_store_URL"]
+        notebook_guid = data["my_notebook_GUID"]
+        return my_token, my_store_URL, notebook_guid
 
 def open_file(directory, file):
 
@@ -232,10 +235,6 @@ def makeNote(authToken, noteStore, noteTitle, author_list, list_of_dicts):
 
     Errors = client.get_user_store()
 
-    # This is the GUID for the "Reading" notebook in my Evernote account. I am hardcoding this because of a bug with the --nbook option that I have not been able to diagnose.
-
-    Reading_guid = "ea612952-d3a5-4a39-862b-01190ba02e47"
-
     # open the image and take its md5_hash
 
     image = open("%s.png" % noteTitle, "rb").read()
@@ -265,7 +264,7 @@ def makeNote(authToken, noteStore, noteTitle, author_list, list_of_dicts):
 
     readingNote = ttypes.Note()
     readingNote.title = noteTitle
-    readingNote.notebookGuid = Reading_guid
+    readingNote.notebookGuid = notebook_guid
     readingNote.resources = resource_list
 
     # Start filling in the note content, including a reference to the image that we added to the resources list above.
@@ -373,10 +372,15 @@ def run_with_evernote():
 
     directory = args.input_folder
 
+    # permissions file comes from whatever the user provides for the "permissions" argument.
+
+    permissions_file = args.permissions_file
+
     # parent_notebook = args.target_notebook
 
     for f in [f for f in os.listdir(directory) if f.endswith(".html")]:
         name = os.path.splitext(f)[0]
+        read_credentials(permissions_file)
         open_file(directory, f)
         extracted_authors = parse_authors(soup)
         parse_headers(soup)
