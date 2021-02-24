@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
-from app import app
 import zibble2
+
+app = Flask(__name__)
 
 @app.route('/')
 def display_home():

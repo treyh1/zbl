@@ -376,6 +376,27 @@ def run_script():
         heads_and_bodies = merge_heads_with_bodies(extracted_heads, extracted_bodies)
         dict_writer(extracted_authors, heads_and_bodies, name)
 
+# This entry-point intended for use with the zibble2 web app. It runs on a single file that has been passed in from the list of files in the flask request.
+
+def run_script_in_web_app(file):
+
+    # Open the file and convert it to a soup object (open_file function not used right now because it needs a directory, clean up later)
+
+    name = os.path.splitext(file)[0]
+
+    with open((file), encoding="utf-8") as input_data:
+        global soup
+        soup = BeautifulSoup(input_data)
+        return soup
+
+    extracted_authors = parse_authors(soup)
+    parse_headers(soup)
+    parse_bodies(soup)
+    extracted_heads = extract_headers(header_divs)
+    extracted_bodies = extract_body(body_divs)
+    heads_and_bodies = merge_heads_with_bodies(extracted_heads, extracted_bodies)
+    output_file = dict_writer(extracted_authors, heads_and_bodies, name)
+    return (output_file)
 
 # The script only calls this function when the --evernote option is supplied.
 
